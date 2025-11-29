@@ -231,6 +231,16 @@ export default function UpgradePage() {
         <div className="max-w-6xl mx-auto space-y-16">
           {/* Hero Section */}
           <div ref={heroRef} className="text-center space-y-6">
+            {/* Test Mode Indicator */}
+            {process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY?.startsWith('pk_test_') ? (
+              <div className="inline-block bg-yellow-100 border-2 border-yellow-400 text-yellow-800 px-4 py-2 rounded-full text-sm font-semibold mb-2 animate-pulse">
+                🧪 Test Mode Active - Use test card: 4242 4242 4242 4242
+              </div>
+            ) : process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY?.startsWith('pk_live_') ? (
+              <div className="inline-block bg-red-100 border-2 border-red-400 text-red-800 px-4 py-2 rounded-full text-sm font-semibold mb-2">
+                ⚠️ LIVE MODE - Test cards won't work! Switch to test keys for testing.
+              </div>
+            ) : null}
             <div className="inline-block bg-bornfidis-gold/20 text-bornfidis-green px-4 py-2 rounded-full text-sm font-semibold mb-4">
               🏆 Most Popular
             </div>
