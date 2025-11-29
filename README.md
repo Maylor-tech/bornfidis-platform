@@ -2,6 +2,8 @@
 
 A Next.js 14 application built with TailwindCSS for the Bornfidis platform.
 
+> **📋 Master Architecture Blueprint**: See [`docs/ARCHITECTURE.md`](./docs/ARCHITECTURE.md) for the complete system design, module specifications, and development guidelines.
+
 ## Getting Started
 
 First, install the dependencies:
