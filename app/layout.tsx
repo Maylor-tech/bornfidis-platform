@@ -34,7 +34,7 @@ export const metadata: Metadata = {
     address: false,
     telephone: false,
   },
-  metadataBase: new URL(process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_BASE_URL || process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000'),
   alternates: {
     canonical: '/',
   },
@@ -89,8 +89,8 @@ export default function RootLayout({
               '@type': 'Organization',
               name: 'Bornfidis',
               description: 'Sustainable activewear and chef services',
-              url: process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000',
-              logo: `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/images/logo/logo.png`,
+              url: process.env.NEXT_PUBLIC_BASE_URL || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000'),
+              logo: `${process.env.NEXT_PUBLIC_BASE_URL || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000')}/images/logo/logo.png`,
               sameAs: [
                 // Add social media links here
               ],
