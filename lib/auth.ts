@@ -5,72 +5,87 @@ import EmailProvider from 'next-auth/providers/email';
 import { prisma } from '@/lib/prisma';
 import { config } from '@/lib/config';
 
-// Build providers array conditionally
-const providers: NextAuthOptions['providers'] = [];
+// Export as a function to avoid build-time evaluation issues
+// This ensures providers are only built at runtime, not during build
+export function getAuthOptions(): NextAuthOptions {
+  // Build providers array at runtime (not at module load time)
+  const providers: NextAuthOptions['providers'] = [];
 
-// Add Google provider if configured
-if (config.auth.google.enabled()) {
-  providers.push(
-    GoogleProvider({
-      clientId: config.auth.google.clientId,
-      clientSecret: config.auth.google.clientSecret,
-    })
-  );
-}
-
-// Add Email provider if configured
-if (config.auth.email.enabled()) {
-  if (config.auth.email.resendApiKey) {
-    // Use Resend for email (SMTP)
+  // Add Google provider if configured
+  if (config.auth.google.enabled()) {
     providers.push(
-      EmailProvider({
-        server: {
-          host: 'smtp.resend.com',
-          port: 465,
-          secure: true,
-          auth: {
-            user: 'resend',
-            pass: config.auth.email.resendApiKey,
-          },
-        },
-        from: config.auth.email.resendFromEmail || config.auth.email.from || 'noreply@bornfidis.com',
-      })
-    );
-  } else if (config.auth.email.sendgridApiKey) {
-    // Use SendGrid for email
-    providers.push(
-      EmailProvider({
-        server: {
-          host: 'smtp.sendgrid.net',
-          port: 587,
-          auth: {
-            user: 'apikey',
-            pass: config.auth.email.sendgridApiKey,
-          },
-        },
-        from: config.auth.email.sendgridFromEmail || config.auth.email.from || 'noreply@bornfidis.com',
-      })
-    );
-  } else if (config.auth.email.serverHost) {
-    // Use custom SMTP
-    providers.push(
-      EmailProvider({
-        server: {
-          host: config.auth.email.serverHost,
-          port: parseInt(config.auth.email.serverPort || '587'),
-          auth: {
-            user: config.auth.email.serverUser,
-            pass: config.auth.email.serverPassword,
-          },
-        },
-        from: config.auth.email.from || 'noreply@bornfidis.com',
+      GoogleProvider({
+        clientId: config.auth.google.clientId,
+        clientSecret: config.auth.google.clientSecret,
       })
     );
   }
-}
 
-// Export as a function to avoid build-time evaluation issues
-export function getAuthOptions(): NextAuthOptions {
+  // Add Email provider if configured
+  if (config.auth.email.enabled()) {
+    if (config.auth.email.resendApiKey) {
+      // Use Resend for email (SMTP)
+      providers.push(
+        EmailProvider({
+          server: {
+            host: 'smtp.resend.com',
+            port: 465,
+            secure: true,
+            auth: {
+              user: 'resend',
+              pass: config.auth.email.resendApiKey,
+            },
+          },
+          from: config.auth.email.resendFromEmail || config.auth.email.from || 'noreply@bornfidis.com',
+        })
+      );
+    } else if (config.auth.email.sendgridApiKey) {
+      // Use SendGrid for email
+      providers.push(
+        EmailProvider({
+          server: {
+            host: 'smtp.sendgrid.net',
+            port: 587,
+            auth: {
+              user: 'apikey',
+              pass: config.auth.email.sendgridApiKey,
+            },
+          },
+          from: config.auth.email.sendgridFromEmail || config.auth.email.from || 'noreply@bornfidis.com',
+        })
+      );
+    } else if (config.auth.email.serverHost) {
+      // Use custom SMTP
+      providers.push(
+        EmailProvider({
+          server: {
+            host: config.auth.email.serverHost,
+            port: parseInt(config.auth.email.serverPort || '587'),
+            auth: {
+              user: config.auth.email.serverUser,
+              pass: config.auth.email.serverPassword,
+            },
+          },
+          from: config.auth.email.from || 'noreply@bornfidis.com',
+        })
+      );
+    }
+  }
+
+  // If no providers configured, add a minimal email provider to prevent NextAuth errors
+  // This allows the build to succeed even without env vars, but auth won't work until configured
+  if (providers.length === 0) {
+    providers.push(
+      EmailProvider({
+        server: {
+          host: 'localhost',
+          port: 587,
+        },
+        from: 'noreply@bornfidis.com',
+      })
+    );
+  }
+
   let adapter;
   try {
     if (config.database.isConfigured() && prisma) {
@@ -83,7 +98,7 @@ export function getAuthOptions(): NextAuthOptions {
 
   return {
     adapter,
-    providers: providers.length > 0 ? providers : [],
+    providers,
     pages: {
       signIn: '/login',
       signOut: '/',
