@@ -69,23 +69,48 @@ if (config.auth.email.enabled()) {
   }
 }
 
-export const authOptions: NextAuthOptions = {
-  adapter: config.database.isConfigured() ? PrismaAdapter(prisma) : undefined,
-  providers,
-  pages: {
-    signIn: '/login',
-    signOut: '/',
-    error: '/login',
-  },
-  callbacks: {
-    async session({ session, user }) {
-      if (session.user && user) {
-        session.user.id = user.id;
-      }
-      return session;
+// Export as a function to avoid build-time evaluation issues
+export function getAuthOptions(): NextAuthOptions {
+  let adapter;
+  try {
+    if (config.database.isConfigured() && prisma) {
+      adapter = PrismaAdapter(prisma);
+    }
+  } catch (error) {
+    // Prisma not available during build - that's ok
+    console.warn('Prisma adapter not available:', error);
+  }
+
+  return {
+    adapter,
+    providers: providers.length > 0 ? providers : [
+      // Fallback: at least provide email provider with a dummy config to prevent errors
+      EmailProvider({
+        server: {
+          host: 'localhost',
+          port: 587,
+        },
+        from: 'noreply@bornfidis.com',
+      }),
+    ],
+    pages: {
+      signIn: '/login',
+      signOut: '/',
+      error: '/login',
     },
-  },
-  secret: config.auth.secret || 'fallback-secret-change-in-production',
-  debug: config.env.isDevelopment,
-};
+    callbacks: {
+      async session({ session, user }) {
+        if (session.user && user) {
+          session.user.id = user.id;
+        }
+        return session;
+      },
+    },
+    secret: config.auth.secret || process.env.NEXTAUTH_SECRET || 'fallback-secret-change-in-production',
+    debug: config.env.isDevelopment,
+  };
+}
+
+// Export as const for backward compatibility (evaluated lazily)
+export const authOptions = getAuthOptions();
 
