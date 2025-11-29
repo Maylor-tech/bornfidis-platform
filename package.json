@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "next lint",
     "setup-env": "node create-env-file.js",
+    "postinstall": "prisma generate",
     "db:generate": "prisma generate",
     "db:push": "prisma db push",
     "db:migrate": "prisma migrate dev",
