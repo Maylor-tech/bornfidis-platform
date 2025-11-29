@@ -1,9 +1,20 @@
 import { NextAuthOptions } from 'next-auth';
-import { PrismaAdapter } from '@auth/prisma-adapter';
 import GoogleProvider from 'next-auth/providers/google';
 import EmailProvider from 'next-auth/providers/email';
 import CredentialsProvider from 'next-auth/providers/credentials';
-import { prisma } from '@/lib/prisma';
+
+// Safely import Prisma - only if available (may not be during build)
+let PrismaAdapter: any = null;
+let prisma: any = null;
+
+try {
+  const prismaModule = require('@/lib/prisma');
+  prisma = prismaModule.prisma;
+  const adapterModule = require('@auth/prisma-adapter');
+  PrismaAdapter = adapterModule.PrismaAdapter;
+} catch (error) {
+  // Prisma not available during build - that's ok, we'll use undefined adapter
+}
 
 // Build providers array at build time (must be evaluable during build)
 // This is used by other API routes that need authOptions
@@ -83,7 +94,7 @@ providers.push(
 // Export authOptions for use in other API routes
 // Built statically at build time to avoid runtime evaluation issues
 export const authOptions: NextAuthOptions = {
-  adapter: process.env.DATABASE_URL ? PrismaAdapter(prisma) : undefined,
+  adapter: (process.env.DATABASE_URL && PrismaAdapter && prisma) ? PrismaAdapter(prisma) : undefined,
   providers,
   pages: {
     signIn: '/login',
