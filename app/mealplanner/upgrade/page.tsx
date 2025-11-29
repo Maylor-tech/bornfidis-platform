@@ -43,14 +43,17 @@ export default function UpgradePage() {
       try {
         const response = await fetch('/api/stripe/premium-price')
         const data = await response.json()
-        if (response.ok && data.amount) {
+        
+        // Always use the data if it has amount, even if it's fallback
+        if (data && typeof data.amount === 'number') {
           setPriceInfo(data)
         } else {
-          // Use fallback if API fails
+          // Use fallback if response is invalid
           setPriceInfo({
             amount: 9.99,
             currency: 'USD',
             interval: 'month',
+            intervalCount: 1,
             formatted: '$9.99/month',
             isFallback: true,
           })
@@ -62,6 +65,7 @@ export default function UpgradePage() {
           amount: 9.99,
           currency: 'USD',
           interval: 'month',
+          intervalCount: 1,
           formatted: '$9.99/month',
           isFallback: true,
         })

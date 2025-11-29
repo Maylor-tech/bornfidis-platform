@@ -16,13 +16,16 @@ export async function GET(request: NextRequest) {
   try {
     // Check if Stripe is configured
     if (!config.stripe.isConfigured() || !stripe) {
-      return NextResponse.json(
-        {
-          error:
-            'Stripe is not configured. Please add STRIPE_SECRET_KEY and NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY to your .env.local file.',
-        },
-        { status: 500 }
-      )
+      console.warn('Stripe not configured, returning fallback pricing')
+      return NextResponse.json({
+        priceId: null,
+        amount: 9.99,
+        currency: 'USD',
+        interval: 'month',
+        intervalCount: 1,
+        formatted: '$9.99/month',
+        isFallback: true,
+      })
     }
 
     // Check for premium price ID
@@ -31,13 +34,16 @@ export async function GET(request: NextRequest) {
       config.stripe.priceIds?.premium
 
     if (!premiumPriceId) {
-      return NextResponse.json(
-        {
-          error:
-            'Premium price ID not configured. Please add NEXT_PUBLIC_STRIPE_PREMIUM_PRICE_ID to your .env.local file.',
-        },
-        { status: 500 }
-      )
+      console.warn('Premium price ID not configured, returning fallback pricing')
+      return NextResponse.json({
+        priceId: null,
+        amount: 9.99,
+        currency: 'USD',
+        interval: 'month',
+        intervalCount: 1,
+        formatted: '$9.99/month',
+        isFallback: true,
+      })
     }
 
     // Fetch the price from Stripe
