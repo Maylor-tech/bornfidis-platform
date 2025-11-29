@@ -1,30 +1,18 @@
 import NextAuth, { NextAuthOptions } from 'next-auth';
+import { PrismaAdapter } from '@auth/prisma-adapter';
 import GoogleProvider from 'next-auth/providers/google';
 import EmailProvider from 'next-auth/providers/email';
 import CredentialsProvider from 'next-auth/providers/credentials';
+import { prisma } from '@/lib/prisma';
 
-// Safely import Prisma - only if available (may not be during build)
-let PrismaAdapter: any = null;
-let prisma: any = null;
-
-try {
-  const prismaModule = require('@/lib/prisma');
-  prisma = prismaModule.prisma;
-  const adapterModule = require('@auth/prisma-adapter');
-  PrismaAdapter = adapterModule.PrismaAdapter;
-} catch (error) {
-  // Prisma not available during build - that's ok, we'll use undefined adapter
-  console.warn('Prisma not available during build - auth will work without database adapter');
-}
-
-// Mark as dynamic to prevent static generation
+// CRITICAL: Mark as fully dynamic - prevents any build-time evaluation
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
-// Build providers array at build time (must be evaluable during build)
+// Build providers array - using process.env directly (available at build time)
 const providers: NextAuthOptions['providers'] = [];
 
-// Add Google provider if configured (evaluated at build time)
+// Google OAuth provider (if configured)
 if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
   providers.push(
     GoogleProvider({
@@ -34,7 +22,7 @@ if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
   );
 }
 
-// Add Email provider if configured (evaluated at build time)
+// Email provider (Resend)
 if (process.env.RESEND_API_KEY) {
   providers.push(
     EmailProvider({
@@ -47,10 +35,12 @@ if (process.env.RESEND_API_KEY) {
           pass: process.env.RESEND_API_KEY,
         },
       },
-      from: process.env.RESEND_FROM_EMAIL || process.env.EMAIL_FROM || 'noreply@bornfidis.com',
+      from: process.env.RESEND_FROM_EMAIL || 'noreply@bornfidis.com',
     })
   );
-} else if (process.env.SENDGRID_API_KEY) {
+} 
+// Email provider (SendGrid)
+else if (process.env.SENDGRID_API_KEY) {
   providers.push(
     EmailProvider({
       server: {
@@ -61,18 +51,20 @@ if (process.env.RESEND_API_KEY) {
           pass: process.env.SENDGRID_API_KEY,
         },
       },
-      from: process.env.SENDGRID_FROM_EMAIL || process.env.EMAIL_FROM || 'noreply@bornfidis.com',
+      from: process.env.SENDGRID_FROM_EMAIL || 'noreply@bornfidis.com',
     })
   );
-} else if (process.env.EMAIL_SERVER_HOST) {
+}
+// Email provider (Custom SMTP)
+else if (process.env.EMAIL_SERVER_HOST) {
   providers.push(
     EmailProvider({
       server: {
         host: process.env.EMAIL_SERVER_HOST,
         port: parseInt(process.env.EMAIL_SERVER_PORT || '587'),
         auth: {
-          user: process.env.EMAIL_SERVER_USER,
-          pass: process.env.EMAIL_SERVER_PASSWORD,
+          user: process.env.EMAIL_SERVER_USER || '',
+          pass: process.env.EMAIL_SERVER_PASSWORD || '',
         },
       },
       from: process.env.EMAIL_FROM || 'noreply@bornfidis.com',
@@ -80,8 +72,7 @@ if (process.env.RESEND_API_KEY) {
   );
 }
 
-// Always include a fallback credentials provider to prevent empty providers array
-// This ensures NextAuth can build even without other providers configured
+// ALWAYS include fallback credentials provider (prevents empty providers array)
 providers.push(
   CredentialsProvider({
     name: 'Credentials',
@@ -89,18 +80,16 @@ providers.push(
       email: { label: 'Email', type: 'email' },
       password: { label: 'Password', type: 'password' },
     },
-    async authorize(credentials) {
-      // Fallback provider - returns null to indicate no auth
-      // Real auth logic should be handled by other providers
+    async authorize() {
+      // Fallback - always returns null (no auth via this provider)
       return null;
     },
   })
 );
 
-// authOptions should NOT be exported - causes build errors
-// Keep it as a const in this file only
+// authOptions - NOT exported (causes build errors if exported)
 const authOptions: NextAuthOptions = {
-  adapter: (process.env.DATABASE_URL && PrismaAdapter && prisma) ? PrismaAdapter(prisma) : undefined,
+  adapter: process.env.DATABASE_URL ? PrismaAdapter(prisma) : undefined,
   providers,
   pages: {
     signIn: '/login',
@@ -119,7 +108,8 @@ const authOptions: NextAuthOptions = {
   debug: process.env.NODE_ENV === 'development',
 };
 
+// Create handler
 const handler = NextAuth(authOptions);
 
+// Export handlers
 export { handler as GET, handler as POST };
-
