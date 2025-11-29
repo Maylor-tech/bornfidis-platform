@@ -41,7 +41,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: 'website',
     locale: 'en_US',
-    url: process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000',
+    url: process.env.NEXT_PUBLIC_BASE_URL || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000'),
     siteName: 'Bornfidis',
     title: 'Bornfidis - Adapt. Explore. Empower.',
     description: 'Sustainable activewear and chef services. Born in Jamaica, built for the world.',
