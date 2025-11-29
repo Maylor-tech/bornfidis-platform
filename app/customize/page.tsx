@@ -1,7 +1,14 @@
 'use client';
 
-import { useState } from 'react';
-import DesignCanvas from '@/components/DesignCanvas';
+import { useState, useEffect } from 'react';
+import dynamic from 'next/dynamic';
+
+// Dynamically import DesignCanvas to avoid SSR issues with DOMParser
+const DesignCanvas = dynamic(() => import('@/components/DesignCanvas'), {
+  ssr: false,
+  loading: () => <div className="flex items-center justify-center h-96"><div className="text-center"><div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-bf-green"></div><p className="mt-4 text-gray-600">Loading canvas...</p></div></div>
+});
+
 import AIDesignAssistant from '@/components/AIDesignAssistant';
 import ChefCustomizer from '@/components/ChefCustomizer';
 

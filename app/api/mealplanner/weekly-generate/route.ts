@@ -6,6 +6,8 @@ import { generateMealPlanPDF } from '@/lib/pdf-generator'
 import { uploadFile } from '@/lib/storage'
 import { Resend } from 'resend'
 
+export const dynamic = 'force-dynamic'
+
 const openai = config.openai.apiKey
   ? new OpenAI({
       apiKey: config.openai.apiKey,
