@@ -1,0 +1,257 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bf-green: #004225;
+  --bf-gold: #B8860B;
+  --bf-black: #000000;
+}
+
+@layer base {
+  /* Base Typography */
+  html {
+    @apply antialiased;
+  }
+
+  body {
+    @apply font-body text-bf-black bg-white;
+    font-size: 1rem;
+    line-height: 1.6;
+  }
+
+  /* Typographic Scale */
+  h1 {
+    @apply font-headline text-4xl md:text-5xl lg:text-6xl;
+    line-height: 1.2;
+    font-weight: 400;
+  }
+
+  h2 {
+    @apply font-headline text-3xl md:text-4xl lg:text-5xl;
+    line-height: 1.3;
+    font-weight: 400;
+  }
+
+  h3 {
+    @apply font-headline text-2xl md:text-3xl lg:text-4xl;
+    line-height: 1.3;
+    font-weight: 400;
+  }
+
+  h4 {
+    @apply font-headline text-xl md:text-2xl lg:text-3xl;
+    line-height: 1.4;
+    font-weight: 400;
+  }
+
+  h5 {
+    @apply font-headline text-lg md:text-xl lg:text-2xl;
+    line-height: 1.4;
+    font-weight: 400;
+  }
+
+  h6 {
+    @apply font-headline text-base md:text-lg lg:text-xl;
+    line-height: 1.5;
+    font-weight: 400;
+  }
+
+  p {
+    @apply font-body text-base md:text-lg;
+    line-height: 1.7;
+    margin-bottom: 1em;
+  }
+
+  a {
+    @apply transition-colors;
+  }
+
+  /* Lists */
+  ul, ol {
+    @apply font-body;
+    margin-bottom: 1em;
+  }
+
+  li {
+    @apply text-base md:text-lg;
+    line-height: 1.7;
+  }
+
+  /* Small text */
+  small {
+    @apply text-sm md:text-base;
+  }
+}
+
+@layer components {
+  /* Container utility */
+  .container {
+    @apply mx-auto px-4 sm:px-6 lg:px-8;
+    max-width: 1280px;
+  }
+
+  /* Button utilities */
+  .btn {
+    @apply px-6 py-3 font-body font-semibold rounded transition-colors;
+  }
+
+  .btn-primary {
+    @apply bg-bf-green text-white hover:bg-opacity-90;
+  }
+
+  .btn-secondary {
+    @apply bg-bf-gold text-bf-black hover:bg-opacity-90;
+  }
+
+  .btn-outline {
+    @apply border-2 border-bf-green text-bf-green hover:bg-bf-green hover:text-white;
+  }
+
+  /* Link utilities */
+  .link-primary {
+    @apply text-bf-green hover:text-bf-gold;
+  }
+
+  .link-gold {
+    @apply text-bf-gold hover:text-opacity-80;
+  }
+
+  /* Text utilities */
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .text-pretty {
+    text-wrap: pretty;
+  }
+}
+
+@layer utilities {
+  /* Spacing utilities */
+  .section-padding {
+    @apply py-12 md:py-16 lg:py-20;
+  }
+
+  .section-padding-sm {
+    @apply py-8 md:py-12;
+  }
+
+  /* Color utilities */
+  .bg-bf-green {
+    background-color: var(--bf-green);
+  }
+
+  .bg-bf-gold {
+    background-color: var(--bf-gold);
+  }
+
+  .bg-bf-black {
+    background-color: var(--bf-black);
+  }
+
+  .text-bf-green {
+    color: var(--bf-green);
+  }
+
+  .text-bf-gold {
+    color: var(--bf-gold);
+  }
+
+  .text-bf-black {
+    color: var(--bf-black);
+  }
+
+  .border-bf-green {
+    border-color: var(--bf-green);
+  }
+
+  .border-bf-gold {
+    border-color: var(--bf-gold);
+  }
+
+  /* Focus utilities */
+  .focus-ring {
+    @apply focus:outline-none focus:ring-2 focus:ring-bf-gold focus:ring-offset-2;
+  }
+
+  /* Transition utilities */
+  .transition-smooth {
+    @apply transition-all duration-300 ease-in-out;
+  }
+
+  /* Animation utilities */
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(2rem);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .animate-fade-in-up {
+    animation: fadeInUp 0.8s ease-out forwards;
+  }
+
+  /* Prose styles for markdown content */
+  .prose {
+    @apply text-gray-800;
+  }
+
+  .prose h1 {
+    @apply text-3xl md:text-4xl font-headline text-bf-green mt-8 mb-4;
+  }
+
+  .prose h2 {
+    @apply text-2xl md:text-3xl font-headline text-bf-green mt-6 mb-3;
+  }
+
+  .prose h3 {
+    @apply text-xl md:text-2xl font-headline text-bf-green mt-4 mb-2;
+  }
+
+  .prose p {
+    @apply mb-4 leading-relaxed;
+  }
+
+  .prose ul,
+  .prose ol {
+    @apply mb-4 ml-6;
+  }
+
+  .prose li {
+    @apply mb-2;
+  }
+
+  .prose a {
+    @apply text-bf-green hover:text-bf-gold underline;
+  }
+
+  .prose strong {
+    @apply font-semibold;
+  }
+
+  .prose em {
+    @apply italic;
+  }
+
+  .prose blockquote {
+    @apply border-l-4 border-bf-gold pl-4 italic my-4 text-gray-700;
+  }
+
+  .prose code {
+    @apply bg-gray-100 px-2 py-1 rounded text-sm font-mono;
+  }
+
+  .prose pre {
+    @apply bg-gray-100 p-4 rounded overflow-x-auto my-4;
+  }
+
+  .prose img {
+    @apply rounded-lg my-6;
+  }
+}
+

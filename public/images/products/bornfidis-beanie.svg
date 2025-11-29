@@ -1,0 +1,64 @@
+<svg width="1600" height="1000" viewBox="0 0 1600 1000" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Bornfidis beanie colorways">
+  <style>
+    @font-face {
+      font-family: 'Montserrat';
+      src: local('Montserrat'), local('Montserrat-Regular');
+    }
+    text {
+      font-family: 'Montserrat', 'Arial', sans-serif;
+      letter-spacing: 0.08em;
+    }
+    .label {
+      font-size: 24px;
+      font-weight: 600;
+      fill: #1f2933;
+    }
+    .pantone {
+      font-size: 18px;
+      font-weight: 500;
+      fill: #4b5563;
+    }
+  </style>
+  <rect width="1600" height="1000" fill="#ffffff"/>
+  <text x="150" y="90" class="label">COLOUR WAY 1</text>
+  <text x="880" y="90" class="label">COLOUR WAY 3</text>
+  <text x="150" y="520" class="label">COLOUR WAY 2</text>
+  <text x="880" y="520" class="label">COLOUR WAY 4</text>
+
+  <!-- Colour Way 1 - Charcoal Gray -->
+  <g transform="translate(60,120)">
+    <path d="M140 290c-90 0-140-70-140-150C0 70 60 0 140 0s140 70 140 140c0 80-50 150-140 150z" fill="#6d6f73"/>
+    <rect x="0" y="210" width="280" height="90" rx="20" fill="#5d6063"/>
+    <text x="140" y="360" text-anchor="middle" class="pantone">CHARCOAL GRAY</text>
+    <text x="140" y="390" text-anchor="middle" class="pantone">PANTONE 18-0601 TCX</text>
+  </g>
+
+  <!-- Colour Way 2 - Forest Green -->
+  <g transform="translate(60,550)">
+    <path d="M140 290c-90 0-140-70-140-150C0 70 60 0 140 0s140 70 140 140c0 80-50 150-140 150z" fill="#6b8d3e"/>
+    <rect x="0" y="210" width="280" height="90" rx="20" fill="#5c7a36"/>
+    <text x="140" y="360" text-anchor="middle" class="pantone">FOREST GREEN</text>
+    <text x="140" y="390" text-anchor="middle" class="pantone">PANTONE 17-0230 TCX</text>
+  </g>
+
+  <!-- Colour Way 3 - Dark Earth -->
+  <g transform="translate(890,120)">
+    <path d="M140 290c-90 0-140-70-140-150C0 70 60 0 140 0s140 70 140 140c0 80-50 150-140 150z" fill="#5e452e"/>
+    <rect x="0" y="210" width="280" height="90" rx="20" fill="#4c3825"/>
+    <text x="140" y="360" text-anchor="middle" class="pantone">DARK EARTH</text>
+    <text x="140" y="390" text-anchor="middle" class="pantone">PANTONE 19-1020 TCX</text>
+  </g>
+
+  <!-- Colour Way 4 - Midnight Sail -->
+  <g transform="translate(890,550)">
+    <path d="M140 290c-90 0-140-70-140-150C0 70 60 0 140 0s140 70 140 140c0 80-50 150-140 150z" fill="#202c52"/>
+    <rect x="0" y="210" width="280" height="90" rx="20" fill="#18203f"/>
+    <text x="140" y="360" text-anchor="middle" class="pantone">MIDNIGHT SAIL</text>
+    <text x="140" y="390" text-anchor="middle" class="pantone">PANTONE 19-3851 TCX</text>
+  </g>
+
+  <!-- Bornfidis wordmark -->
+  <text x="800" y="960" text-anchor="middle" class="label" fill="#1f2933">Bornfidis · Beanie Colourways</text>
+</svg>
+
+

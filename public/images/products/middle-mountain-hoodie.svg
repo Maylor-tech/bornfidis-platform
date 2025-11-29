@@ -1,0 +1,30 @@
+<svg width="800" height="800" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="hoodieGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#E8E8E8;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#D0D0D0;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="hoodieShadow" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#000000;stop-opacity:0.1" />
+      <stop offset="100%" style="stop-color:#000000;stop-opacity:0.3" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="800" height="800" fill="#F5F5F5"/>
+  
+  <!-- Hoodie Body -->
+  <path d="M 200 150 Q 200 100 250 100 L 550 100 Q 600 100 600 150 L 600 650 Q 600 700 550 700 L 250 700 Q 200 700 200 650 Z" fill="url(#hoodieGrad)" stroke="#B0B0B0" stroke-width="2"/>
+  
+  <!-- Hoodie Hood -->
+  <path d="M 250 100 Q 200 80 200 50 Q 200 20 250 20 Q 300 20 400 30 Q 500 20 550 20 Q 600 20 600 50 Q 600 80 550 100" fill="url(#hoodieGrad)" stroke="#B0B0B0" stroke-width="2"/>
+  
+  <!-- Hoodie Pocket -->
+  <rect x="300" y="450" width="200" height="120" rx="5" fill="url(#hoodieShadow)" opacity="0.3"/>
+  <path d="M 300 450 Q 300 440 310 440 L 490 440 Q 500 440 500 450" stroke="#B0B0B0" stroke-width="2" fill="none"/>
+  
+  <!-- Product Label -->
+  <text x="400" y="400" font-family="Arial, sans-serif" font-size="48" font-weight="bold" fill="#666" text-anchor="middle">HOODIE</text>
+  <text x="400" y="440" font-family="Arial, sans-serif" font-size="24" fill="#999" text-anchor="middle">Product Image</text>
+</svg>
+
