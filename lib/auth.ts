@@ -83,16 +83,7 @@ export function getAuthOptions(): NextAuthOptions {
 
   return {
     adapter,
-    providers: providers.length > 0 ? providers : [
-      // Fallback: at least provide email provider with a dummy config to prevent errors
-      EmailProvider({
-        server: {
-          host: 'localhost',
-          port: 587,
-        },
-        from: 'noreply@bornfidis.com',
-      }),
-    ],
+    providers: providers.length > 0 ? providers : [],
     pages: {
       signIn: '/login',
       signOut: '/',
