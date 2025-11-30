@@ -90,6 +90,8 @@ function PremiumSuccessContent() {
                 <p className="text-sm text-bornfidis-black/60 font-body">
                   If access doesn't activate within a few minutes, please contact support.
                 </p>
+              </div>
+            )}
           </div>
 
           {/* What's Next */}
