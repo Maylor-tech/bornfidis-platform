@@ -41,7 +41,20 @@ export default function UpgradePage() {
   useEffect(() => {
     const fetchPrice = async () => {
       try {
-        const response = await fetch('/api/stripe/premium-price')
+        // Add timeout to prevent hanging
+        const controller = new AbortController()
+        const timeoutId = setTimeout(() => controller.abort(), 5000) // 5 second timeout
+        
+        const response = await fetch('/api/stripe/premium-price', {
+          signal: controller.signal,
+        })
+        
+        clearTimeout(timeoutId)
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`)
+        }
+        
         const data = await response.json()
         
         // Always use the data if it has amount, even if it's fallback
@@ -60,7 +73,7 @@ export default function UpgradePage() {
         }
       } catch (err) {
         console.error('Error fetching price:', err)
-        // Use fallback on error
+        // Use fallback on error (including timeout)
         setPriceInfo({
           amount: 9.99,
           currency: 'USD',
