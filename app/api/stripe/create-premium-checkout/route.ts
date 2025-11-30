@@ -54,8 +54,12 @@ export async function POST(request: NextRequest) {
     
     // Determine base URL with proper port detection
     let baseUrl: string
-    if (origin && (origin.includes('localhost') || origin.includes('127.0.0.1'))) {
-      // Use origin if it's localhost (preserves port)
+    
+    // First, try to use NEXT_PUBLIC_BASE_URL if set
+    if (process.env.NEXT_PUBLIC_BASE_URL) {
+      baseUrl = process.env.NEXT_PUBLIC_BASE_URL.replace(/\/$/, '')
+    } else if (origin && (origin.includes('localhost') || origin.includes('127.0.0.1'))) {
+      // Use origin if it's localhost (preserves port like 3003)
       baseUrl = origin
     } else if (host && (host.includes('localhost') || host.includes('127.0.0.1'))) {
       // Use host header with protocol
@@ -67,7 +71,7 @@ export async function POST(request: NextRequest) {
         const refererUrl = new URL(referer)
         baseUrl = `${refererUrl.protocol}//${refererUrl.host}`
       } catch {
-        baseUrl = config.app.baseUrl
+        baseUrl = config.app.baseUrl || 'http://localhost:3000'
       }
     } else {
       // Fallback to config or default

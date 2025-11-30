@@ -43,6 +43,7 @@ function PremiumSuccessContent() {
       clearTimeout(timeout1)
       clearTimeout(timeout2)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams])
 
   return (
