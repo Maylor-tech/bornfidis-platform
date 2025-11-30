@@ -19,9 +19,16 @@ export async function GET(request: NextRequest) {
         userId: session.user.id,
         active: true,
       },
+      orderBy: {
+        updatedAt: 'desc',
+      },
     })
 
-    return NextResponse.json({ isPremium: !!premiumAccess })
+    return NextResponse.json({ 
+      isPremium: !!premiumAccess,
+      subscriptionId: premiumAccess?.stripeId || null,
+      activatedAt: premiumAccess?.createdAt || null,
+    })
   } catch (error) {
     console.error('Error checking premium status:', error)
     return NextResponse.json({ isPremium: false })

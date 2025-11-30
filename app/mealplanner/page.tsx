@@ -50,6 +50,7 @@ function MealPlannerContent() {
   const [result, setResult] = useState<MealPlanResponse | null>(null)
   const [isPremium, setIsPremium] = useState(false)
   const [checkingPremium, setCheckingPremium] = useState(true)
+  const [premiumActivated, setPremiumActivated] = useState(false)
 
   // Check premium status on mount and after successful payment
   useEffect(() => {
@@ -58,6 +59,7 @@ function MealPlannerContent() {
         const response = await fetch('/api/mealplanner/premium-status')
         const data = await response.json()
         setIsPremium(data.isPremium || false)
+        console.log('Premium status:', data.isPremium ? '✅ Active' : '❌ Inactive')
       } catch (err) {
         console.error('Error checking premium status:', err)
         setIsPremium(false)
@@ -66,10 +68,47 @@ function MealPlannerContent() {
       }
     }
 
-    checkPremiumStatus()
+    // Check if we have a session_id from Stripe checkout
+    const sessionId = searchParams?.get('session_id')
+    if (sessionId) {
+      console.log('🔍 Verifying Stripe session:', sessionId)
+      // Verify session and activate premium access immediately
+      fetch('/api/stripe/verify-session', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ sessionId }),
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.success) {
+            console.log('✅ Premium access activated via session verification')
+            setIsPremium(true)
+            setPremiumActivated(true)
+            // Show success message
+            setError(null)
+            // Remove session_id from URL
+            window.history.replaceState({}, '', '/mealplanner?premium=activated')
+            // Hide success message after 5 seconds
+            setTimeout(() => setPremiumActivated(false), 5000)
+          } else {
+            console.warn('⚠️ Session verification failed, will rely on webhook')
+          }
+          // Check status after verification attempt
+          setTimeout(checkPremiumStatus, 1000)
+        })
+        .catch((err) => {
+          console.error('Error verifying session:', err)
+          // Still check status in case webhook already processed it
+          setTimeout(checkPremiumStatus, 2000)
+        })
+    } else {
+      checkPremiumStatus()
+    }
 
     // If redirected from successful payment, refresh premium status
-    if (searchParams?.get('premium') === '1') {
+    if (searchParams?.get('premium') === 'activated') {
       setTimeout(checkPremiumStatus, 1000)
     }
   }, [searchParams])
@@ -112,6 +151,13 @@ function MealPlannerContent() {
 
   const handleExportPDF = () => {
     if (!result) return
+    
+    // Check premium status before allowing PDF export
+    if (!isPremium) {
+      setError('PDF export is a premium feature. Please upgrade to unlock this feature.')
+      // Scroll to upgrade section or show upgrade modal
+      return
+    }
 
     // Brand colors (as tuples for jsPDF)
     const colors = {
@@ -520,6 +566,45 @@ function MealPlannerContent() {
           )}
 
           {/* Error Display */}
+          {/* Premium Activated Success Message */}
+          {premiumActivated && (
+            <div className="bg-green-50 border-2 border-green-300 rounded-xl p-6 mb-6 animate-fade-in">
+              <div className="flex items-start gap-4">
+                <div className="flex-shrink-0">
+                  <svg
+                    className="w-6 h-6 text-green-600"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
+                  </svg>
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-lg font-headline text-green-800 mb-2">
+                    🎉 Premium Access Activated!
+                  </h3>
+                  <p className="text-green-700 font-body">
+                    Your premium subscription is now active. You now have access to full 7-day meal plans, complete shopping lists, and PDF exports!
+                  </p>
+                </div>
+                <button
+                  onClick={() => setPremiumActivated(false)}
+                  className="flex-shrink-0 text-green-600 hover:text-green-800"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+          )}
+
           {error && (
             <div className="bg-red-50 border-2 border-red-200 rounded-xl p-6">
               <h3 className="text-lg font-headline text-red-800 mb-2">Error</h3>

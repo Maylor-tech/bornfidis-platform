@@ -25,6 +25,7 @@ export default function DashboardPage() {
   const router = useRouter();
   const [orders, setOrders] = useState<Order[]>([]);
   const [bookings, setBookings] = useState<Booking[]>([]);
+  const [isPremium, setIsPremium] = useState(false);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -37,17 +38,20 @@ export default function DashboardPage() {
 
   const fetchUserData = async () => {
     try {
-      // Fetch orders and bookings
-      const [ordersRes, bookingsRes] = await Promise.all([
+      // Fetch orders, bookings, and premium status
+      const [ordersRes, bookingsRes, premiumRes] = await Promise.all([
         fetch('/api/orders'),
         fetch('/api/bookings'),
+        fetch('/api/mealplanner/premium-status'),
       ]);
 
       const ordersData = await ordersRes.json();
       const bookingsData = await bookingsRes.json();
+      const premiumData = await premiumRes.json();
 
       setOrders(ordersData.orders || []);
       setBookings(bookingsData.bookings || []);
+      setIsPremium(premiumData.isPremium || false);
     } catch (error) {
       console.error('Error fetching user data:', error);
     } finally {
@@ -76,6 +80,53 @@ export default function DashboardPage() {
         <h1 className="text-4xl font-headline text-bf-green mb-8">
           Welcome back, {session.user?.name || 'User'}!
         </h1>
+
+        {/* Premium Subscription Card */}
+        {isPremium ? (
+          <div className="bg-gradient-to-br from-bornfidis-green to-bornfidis-green/90 text-white rounded-lg shadow-lg p-6 mb-8 border-4 border-bornfidis-gold">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-2xl font-headline mb-0">Premium Meal Planner</h2>
+              <span className="bg-bornfidis-gold text-bornfidis-green px-3 py-1 rounded-full text-sm font-bold">
+                ACTIVE
+              </span>
+            </div>
+            <p className="text-white/90 mb-4">
+              You have full access to all premium meal planning features.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-3">
+              <Link
+                href="/mealplanner"
+                className="bg-white text-bornfidis-green rounded-lg px-6 py-2 font-semibold hover:bg-bornfidis-gold hover:text-bornfidis-black transition text-center"
+              >
+                Start Meal Planning
+              </Link>
+              <Link
+                href="/dashboard/mealplans"
+                className="border-2 border-white text-white rounded-lg px-6 py-2 font-semibold hover:bg-white hover:text-bornfidis-green transition text-center"
+              >
+                View Meal Plans
+              </Link>
+            </div>
+          </div>
+        ) : (
+          <div className="bg-white rounded-lg shadow-lg p-6 mb-8 border-2 border-bornfidis-gold/30">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-2xl font-headline text-bf-green mb-0">Meal Planner</h2>
+              <span className="bg-gray-200 text-gray-700 px-3 py-1 rounded-full text-sm font-semibold">
+                FREE
+              </span>
+            </div>
+            <p className="text-gray-600 mb-4">
+              Upgrade to Premium for full 7-day meal plans, PDF exports, and weekly AI meal drops.
+            </p>
+            <Link
+              href="/mealplanner/upgrade"
+              className="inline-block bg-bornfidis-green text-white rounded-lg px-6 py-2 font-semibold hover:bg-bornfidis-gold hover:text-bornfidis-black transition"
+            >
+              Upgrade to Premium →
+            </Link>
+          </div>
+        )}
 
         <div className="grid md:grid-cols-3 gap-8 mb-12">
           {/* Profile Card */}

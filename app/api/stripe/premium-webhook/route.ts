@@ -120,7 +120,7 @@ export async function POST(request: NextRequest) {
         })
       }
 
-      console.log(`Premium access granted for user: ${userId}`)
+      console.log(`✅ Premium access granted for user: ${userId}, customer: ${customerId}`)
     }
 
     // Handle subscription updates
@@ -146,13 +146,18 @@ export async function POST(request: NextRequest) {
           },
         })
 
-        console.log(`Premium access ${isActive ? 'activated' : 'deactivated'} for user: ${premiumAccess.userId}`)
+        console.log(`✅ Premium access ${isActive ? 'activated' : 'deactivated'} for user: ${premiumAccess.userId}, subscription: ${subscription.id}`)
+      } else {
+        console.warn(`⚠️ Subscription ${subscription.id} found but no premium access record exists`)
       }
     }
 
+    console.log(`✅ Webhook processed successfully: ${event.type}`)
     return NextResponse.json({ received: true })
   } catch (error) {
-    console.error('Error processing premium webhook:', error)
+    console.error('❌ Error processing premium webhook:', error)
+    console.error('Event type:', event?.type)
+    console.error('Error details:', error instanceof Error ? error.message : String(error))
     return NextResponse.json(
       { error: 'Webhook processing failed' },
       { status: 500 }
