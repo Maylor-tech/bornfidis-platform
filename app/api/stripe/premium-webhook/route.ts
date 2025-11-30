@@ -121,6 +121,39 @@ export async function POST(request: NextRequest) {
       }
 
       console.log(`✅ Premium access granted for user: ${userId}, customer: ${customerId}`)
+      
+      // Send welcome email (non-blocking)
+      try {
+        const customerEmail = session.customer_email || 
+          (typeof session.customer === 'string' 
+            ? null 
+            : (session.customer as Stripe.Customer)?.email)
+        
+        if (customerEmail) {
+          // Fetch user name if available
+          const user = await prisma.user.findUnique({
+            where: { id: userId },
+            select: { name: true, email: true },
+          })
+          
+          // Send welcome email asynchronously (don't block webhook)
+          fetch(`${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/api/stripe/send-welcome-email`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              email: customerEmail,
+              userName: user?.name || null,
+              sessionId: session.id,
+            }),
+          }).catch((err) => {
+            console.warn('Failed to send welcome email:', err)
+            // Don't fail webhook if email fails
+          })
+        }
+      } catch (emailError) {
+        console.warn('Error triggering welcome email:', emailError)
+        // Don't fail webhook if email fails
+      }
     }
 
     // Handle subscription updates

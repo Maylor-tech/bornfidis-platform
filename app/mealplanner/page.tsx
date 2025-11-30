@@ -621,8 +621,41 @@ function MealPlannerContent() {
             </div>
           )}
 
+          {/* Loading State */}
+          {loading && (
+            <div className="space-y-6">
+              <div className="bg-white rounded-xl shadow-sm p-6 md:p-8">
+                <div className="flex items-center justify-center py-12">
+                  <div className="text-center">
+                    <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-4 border-bornfidis-green border-t-transparent mb-4"></div>
+                    <p className="text-bornfidis-green font-body font-semibold text-lg">
+                      Creating your personalized meal plan...
+                    </p>
+                    <p className="text-bornfidis-black/70 font-body text-sm mt-2">
+                      This may take a few moments
+                    </p>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Skeleton Loaders */}
+              <div className="space-y-6">
+                {[1, 2, 3].map((i) => (
+                  <div key={i} className="bg-white rounded-xl shadow-sm border-t-4 border-bornfidis-gold p-6 animate-pulse">
+                    <div className="h-8 bg-bornfidis-sage/30 rounded mb-4 w-1/3"></div>
+                    <div className="space-y-3">
+                      <div className="h-4 bg-bornfidis-sage/20 rounded w-full"></div>
+                      <div className="h-4 bg-bornfidis-sage/20 rounded w-5/6"></div>
+                      <div className="h-4 bg-bornfidis-sage/20 rounded w-4/6"></div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
           {/* Results Display */}
-          {result && (
+          {result && !loading && (
             <div className="space-y-10">
               {/* Back Button */}
               <button

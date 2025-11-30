@@ -51,12 +51,13 @@ function PremiumSuccessContent() {
         <div className="max-w-3xl mx-auto">
           {/* Success Icon */}
           <div className="text-center mb-8">
-            <div className="w-24 h-24 bg-bornfidis-green rounded-full flex items-center justify-center mx-auto mb-6 animate-bounce">
+            <div className="w-24 h-24 bg-bornfidis-green rounded-full flex items-center justify-center mx-auto mb-6 animate-scale-in">
               <svg
-                className="w-12 h-12 text-white"
+                className="w-12 h-12 text-white animate-checkmark"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
+                style={{ strokeDasharray: '0 50' }}
               >
                 <path
                   strokeLinecap="round"
@@ -169,19 +170,67 @@ function PremiumSuccessContent() {
           </div>
 
           {/* CTAs */}
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <div className="flex flex-col sm:flex-row gap-4 justify-center mb-8">
             <Link
               href="/mealplanner"
-              className="bg-bornfidis-green text-white rounded-xl px-8 py-4 text-lg font-semibold hover:bg-bornfidis-gold hover:text-bornfidis-black transition-all duration-300 text-center"
+              className="bg-bornfidis-green text-white rounded-xl px-10 py-5 text-xl font-semibold hover:bg-bornfidis-gold hover:text-bornfidis-black transition-all duration-300 text-center shadow-lg hover:shadow-xl transform hover:scale-105 flex items-center justify-center gap-2"
             >
+              <svg
+                className="w-6 h-6"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+                />
+              </svg>
               Start Meal Planning
             </Link>
             <Link
               href="/dashboard"
-              className="border-2 border-bornfidis-green text-bornfidis-green rounded-xl px-8 py-4 text-lg font-semibold hover:bg-bornfidis-green hover:text-white transition-all duration-300 text-center"
+              className="border-2 border-bornfidis-green text-bornfidis-green rounded-xl px-8 py-5 text-lg font-semibold hover:bg-bornfidis-green hover:text-white transition-all duration-300 text-center"
             >
               Go to Dashboard
             </Link>
+          </div>
+
+          {/* Social Sharing */}
+          {isPremium && (
+            <div className="bg-bornfidis-sage/20 rounded-xl p-6 mb-8 border-2 border-bornfidis-gold/30">
+            <h3 className="font-headline text-bornfidis-green font-bold mb-3 text-center">
+              Share Your Success! 🎉
+            </h3>
+            <p className="text-bornfidis-black/80 font-body text-center mb-4 text-sm">
+              Let others know about your meal planning journey
+            </p>
+            <div className="flex justify-center gap-3">
+              <a
+                href={`https://twitter.com/intent/tweet?text=${encodeURIComponent('Just upgraded to Bornfidis Premium Meal Planner! 🎉 Time to transform my meal planning!')}&url=${encodeURIComponent('https://bornfidis-platform.vercel.app/mealplanner')}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition flex items-center gap-2 text-sm"
+              >
+                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M23 3a10.9 10.9 0 01-3.14 1.53 4.48 4.48 0 00-7.86 3v1A10.66 10.66 0 013 4s-4 9 5 13a11.64 11.64 0 01-7 2c9 5 20 0 20-11.5a4.5 4.5 0 00-.08-.83A7.72 7.72 0 0023 3z"/>
+                </svg>
+                Share on X
+              </a>
+              <a
+                href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent('https://bornfidis-platform.vercel.app/mealplanner')}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition flex items-center gap-2 text-sm"
+              >
+                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                </svg>
+                Share on Facebook
+              </a>
+            </div>
           </div>
 
           {/* Help Text */}

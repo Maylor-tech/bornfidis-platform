@@ -31,7 +31,20 @@ export default function PremiumBadge() {
     checkPremium()
   }, [session])
 
-  if (!session || loading || !isPremium) {
+  if (!session) {
+    return null
+  }
+
+  if (loading) {
+    return (
+      <div className="inline-flex items-center gap-2 bg-gray-200 text-gray-500 px-3 py-1.5 rounded-full text-xs font-semibold animate-pulse">
+        <span>⭐</span>
+        <span>Loading...</span>
+      </div>
+    )
+  }
+
+  if (!isPremium) {
     return null
   }
 

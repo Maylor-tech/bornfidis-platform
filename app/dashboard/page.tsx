@@ -26,7 +26,16 @@ export default function DashboardPage() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [isPremium, setIsPremium] = useState(false);
+  const [premiumData, setPremiumData] = useState<{
+    subscriptionId: string | null;
+    activatedAt: string | null;
+  } | null>(null);
+  const [stats, setStats] = useState<{
+    plansThisMonth: number;
+    totalPlans: number;
+  } | null>(null);
   const [loading, setLoading] = useState(true);
+  const [portalLoading, setPortalLoading] = useState(false);
 
   useEffect(() => {
     if (status === 'unauthenticated') {
@@ -38,20 +47,30 @@ export default function DashboardPage() {
 
   const fetchUserData = async () => {
     try {
-      // Fetch orders, bookings, and premium status
-      const [ordersRes, bookingsRes, premiumRes] = await Promise.all([
+      // Fetch orders, bookings, premium status, and stats
+      const [ordersRes, bookingsRes, premiumRes, statsRes] = await Promise.all([
         fetch('/api/orders'),
         fetch('/api/bookings'),
         fetch('/api/mealplanner/premium-status'),
+        fetch('/api/dashboard/stats'),
       ]);
 
       const ordersData = await ordersRes.json();
       const bookingsData = await bookingsRes.json();
       const premiumData = await premiumRes.json();
+      const statsData = await statsRes.json();
 
       setOrders(ordersData.orders || []);
       setBookings(bookingsData.bookings || []);
       setIsPremium(premiumData.isPremium || false);
+      setPremiumData({
+        subscriptionId: premiumData.subscriptionId || null,
+        activatedAt: premiumData.activatedAt || null,
+      });
+      setStats({
+        plansThisMonth: statsData.plansThisMonth || 0,
+        totalPlans: statsData.totalPlans || 0,
+      });
     } catch (error) {
       console.error('Error fetching user data:', error);
     } finally {
@@ -93,6 +112,52 @@ export default function DashboardPage() {
             <p className="text-white/90 mb-4">
               You have full access to all premium meal planning features.
             </p>
+            
+            {/* Subscription Details */}
+            {premiumData?.activatedAt && (
+              <div className="bg-white/10 rounded-lg p-4 mb-4 backdrop-blur-sm">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                  <div>
+                    <p className="text-white/70 mb-1">Member Since</p>
+                    <p className="font-semibold">
+                      {new Date(premiumData.activatedAt).toLocaleDateString('en-US', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric',
+                      })}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-white/70 mb-1">Subscription Status</p>
+                    <p className="font-semibold">Active</p>
+                  </div>
+                  {stats && (
+                    <div>
+                      <p className="text-white/70 mb-1">Plans This Month</p>
+                      <p className="font-semibold">{stats.plansThisMonth}</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+            
+            {/* Usage Stats */}
+            {stats && stats.totalPlans > 0 && (
+              <div className="bg-white/10 rounded-lg p-4 mb-4 backdrop-blur-sm">
+                <h3 className="text-white font-semibold mb-3">Your Activity</h3>
+                <div className="grid grid-cols-2 gap-4 text-sm">
+                  <div>
+                    <p className="text-white/70 mb-1">Total Meal Plans</p>
+                    <p className="text-2xl font-bold text-bornfidis-gold">{stats.totalPlans}</p>
+                  </div>
+                  <div>
+                    <p className="text-white/70 mb-1">This Month</p>
+                    <p className="text-2xl font-bold text-bornfidis-gold">{stats.plansThisMonth}</p>
+                  </div>
+                </div>
+              </div>
+            )}
+            
             <div className="flex flex-col sm:flex-row gap-3">
               <Link
                 href="/mealplanner"
@@ -106,6 +171,31 @@ export default function DashboardPage() {
               >
                 View Meal Plans
               </Link>
+              <button
+                onClick={async () => {
+                  setPortalLoading(true)
+                  try {
+                    const response = await fetch('/api/stripe/create-portal-session', {
+                      method: 'POST',
+                    })
+                    const data = await response.json()
+                    if (data.url) {
+                      window.location.href = data.url
+                    } else {
+                      alert('Failed to open billing portal')
+                    }
+                  } catch (err) {
+                    console.error('Error opening portal:', err)
+                    alert('Failed to open billing portal')
+                  } finally {
+                    setPortalLoading(false)
+                  }
+                }}
+                disabled={portalLoading}
+                className="border-2 border-white/50 text-white rounded-lg px-6 py-2 font-semibold hover:bg-white/20 transition text-center disabled:opacity-50"
+              >
+                {portalLoading ? 'Loading...' : 'Manage Billing'}
+              </button>
             </div>
           </div>
         ) : (

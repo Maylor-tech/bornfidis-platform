@@ -196,6 +196,40 @@
     animation: fadeInUp 0.8s ease-out forwards;
   }
 
+  @keyframes scale-in {
+    from {
+      transform: scale(0);
+      opacity: 0;
+    }
+    to {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+
+  .animate-scale-in {
+    animation: scale-in 0.5s ease-out;
+  }
+
+  @keyframes checkmark {
+    0% {
+      stroke-dasharray: 0 50;
+      opacity: 0;
+    }
+    50% {
+      opacity: 1;
+    }
+    100% {
+      stroke-dasharray: 50 0;
+      opacity: 1;
+    }
+  }
+
+  .animate-checkmark {
+    animation: checkmark 0.8s ease-out 0.3s forwards;
+    stroke-dasharray: 0 50;
+  }
+
   /* Prose styles for markdown content */
   .prose {
     @apply text-gray-800;
