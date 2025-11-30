@@ -43,8 +43,7 @@ function PremiumSuccessContent() {
       clearTimeout(timeout1)
       clearTimeout(timeout2)
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchParams])
+  }, [searchParams]) // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <div className="bg-gradient-to-b from-bornfidis-cream to-bornfidis-sage min-h-screen">
