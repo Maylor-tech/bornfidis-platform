@@ -13,7 +13,6 @@ function PremiumSuccessContent() {
   const [sessionId, setSessionId] = useState<string | null>(null)
 
   useEffect(() => {
-    // Get session ID from URL
     const sessionIdParam = searchParams?.get('session_id')
     if (sessionIdParam) {
       setSessionId(sessionIdParam)
@@ -34,7 +33,6 @@ function PremiumSuccessContent() {
       }
     }
 
-    // Check immediately and then again after delays (webhook might be processing)
     checkPremiumStatus()
     const timeout1 = setTimeout(checkPremiumStatus, 2000)
     const timeout2 = setTimeout(checkPremiumStatus, 5000)
@@ -43,7 +41,7 @@ function PremiumSuccessContent() {
       clearTimeout(timeout1)
       clearTimeout(timeout2)
     }
-  }, [searchParams]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [searchParams])
 
   return (
     <div className="bg-gradient-to-b from-bornfidis-cream to-bornfidis-sage min-h-screen">
@@ -92,8 +90,6 @@ function PremiumSuccessContent() {
                 <p className="text-sm text-bornfidis-black/60 font-body">
                   If access doesn't activate within a few minutes, please contact support.
                 </p>
-              </div>
-            )}
           </div>
 
           {/* What's Next */}
@@ -201,37 +197,38 @@ function PremiumSuccessContent() {
           {/* Social Sharing */}
           {isPremium && (
             <div className="bg-bornfidis-sage/20 rounded-xl p-6 mb-8 border-2 border-bornfidis-gold/30">
-            <h3 className="font-headline text-bornfidis-green font-bold mb-3 text-center">
-              Share Your Success! 🎉
-            </h3>
-            <p className="text-bornfidis-black/80 font-body text-center mb-4 text-sm">
-              Let others know about your meal planning journey
-            </p>
-            <div className="flex justify-center gap-3">
-              <a
-                href={`https://twitter.com/intent/tweet?text=${encodeURIComponent('Just upgraded to Bornfidis Premium Meal Planner! 🎉 Time to transform my meal planning!')}&url=${encodeURIComponent('https://bornfidis-platform.vercel.app/mealplanner')}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition flex items-center gap-2 text-sm"
-              >
-                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M23 3a10.9 10.9 0 01-3.14 1.53 4.48 4.48 0 00-7.86 3v1A10.66 10.66 0 013 4s-4 9 5 13a11.64 11.64 0 01-7 2c9 5 20 0 20-11.5a4.5 4.5 0 00-.08-.83A7.72 7.72 0 0023 3z"/>
-                </svg>
-                Share on X
-              </a>
-              <a
-                href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent('https://bornfidis-platform.vercel.app/mealplanner')}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition flex items-center gap-2 text-sm"
-              >
-                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
-                </svg>
-                Share on Facebook
-              </a>
+              <h3 className="font-headline text-bornfidis-green font-bold mb-3 text-center">
+                Share Your Success! 🎉
+              </h3>
+              <p className="text-bornfidis-black/80 font-body text-center mb-4 text-sm">
+                Let others know about your meal planning journey
+              </p>
+              <div className="flex justify-center gap-3">
+                <a
+                  href={`https://twitter.com/intent/tweet?text=${encodeURIComponent('Just upgraded to Bornfidis Premium Meal Planner! 🎉 Time to transform my meal planning!')}&url=${encodeURIComponent('https://bornfidis-platform.vercel.app/mealplanner')}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition flex items-center gap-2 text-sm"
+                >
+                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M23 3a10.9 10.9 0 01-3.14 1.53 4.48 4.48 0 00-7.86 3v1A10.66 10.66 0 013 4s-4 9 5 13a11.64 11.64 0 01-7 2c9 5 20 0 20-11.5a4.5 4.5 0 00-.08-.83A7.72 7.72 0 0023 3z"/>
+                  </svg>
+                  Share on X
+                </a>
+                <a
+                  href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent('https://bornfidis-platform.vercel.app/mealplanner')}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition flex items-center gap-2 text-sm"
+                >
+                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                  </svg>
+                  Share on Facebook
+                </a>
+              </div>
             </div>
-          </div>
+          )}
 
           {/* Help Text */}
           <p className="text-center text-sm text-bornfidis-black/70 mt-8 font-body">
@@ -260,4 +257,3 @@ export default function PremiumSuccessPage() {
     </Suspense>
   )
 }
-
