@@ -47,13 +47,51 @@ export async function POST(request: NextRequest) {
     const userId = session?.user?.id || null
 
     // Get the base URL for success/cancel URLs
-    // For local development, always use localhost:3000
-    // In production, use the configured base URL or origin
+    // Try multiple methods to get the correct base URL
     const origin = request.headers.get('origin') || ''
-    const isLocalhost = origin.includes('localhost') || origin.includes('127.0.0.1')
-    const baseUrl = isLocalhost 
-      ? 'http://localhost:3000'
-      : (config.app.baseUrl || origin || 'http://localhost:3000')
+    const referer = request.headers.get('referer') || ''
+    const host = request.headers.get('host') || ''
+    
+    // Determine base URL with proper port detection
+    let baseUrl: string
+    if (origin && (origin.includes('localhost') || origin.includes('127.0.0.1'))) {
+      // Use origin if it's localhost (preserves port)
+      baseUrl = origin
+    } else if (host && (host.includes('localhost') || host.includes('127.0.0.1'))) {
+      // Use host header with protocol
+      const protocol = request.headers.get('x-forwarded-proto') || 'http'
+      baseUrl = `${protocol}://${host}`
+    } else if (referer) {
+      // Extract from referer
+      try {
+        const refererUrl = new URL(referer)
+        baseUrl = `${refererUrl.protocol}//${refererUrl.host}`
+      } catch {
+        baseUrl = config.app.baseUrl
+      }
+    } else {
+      // Fallback to config or default
+      baseUrl = config.app.baseUrl || 'http://localhost:3000'
+    }
+
+    // Ensure baseUrl is absolute and doesn't end with slash
+    baseUrl = baseUrl.replace(/\/$/, '')
+    
+    // Build success and cancel URLs
+    const successUrl = `${baseUrl}/mealplanner/success?session_id={CHECKOUT_SESSION_ID}`
+    const cancelUrl = `${baseUrl}/mealplanner/upgrade?canceled=1`
+
+    // Log for debugging
+    console.log('🔍 Creating premium checkout session:', {
+      userId: userId || 'anonymous',
+      baseUrl,
+      successUrl,
+      cancelUrl,
+      priceId: premiumPriceId,
+      origin,
+      host,
+      referer,
+    })
 
     // Create Stripe Checkout Session
     const checkoutSession = await stripe.checkout.sessions.create({
@@ -64,18 +102,30 @@ export async function POST(request: NextRequest) {
           quantity: 1,
         },
       ],
-      mode: 'subscription', // Can be 'payment' for one-time or 'subscription' for recurring
-      success_url: `${baseUrl}/mealplanner?premium=1`,
-      cancel_url: `${baseUrl}/mealplanner/upgrade?canceled=1`,
+      mode: 'subscription',
+      success_url: successUrl,
+      cancel_url: cancelUrl,
       metadata: {
         userId: userId || 'anonymous',
         productType: 'meal_planner_premium',
+        baseUrl, // Store for debugging
       },
       customer_email: session?.user?.email || undefined,
       allow_promotion_codes: true,
     })
 
-    return NextResponse.json({ sessionId: checkoutSession.id, url: checkoutSession.url })
+    console.log('✅ Checkout session created:', {
+      sessionId: checkoutSession.id,
+      url: checkoutSession.url,
+      successUrl: checkoutSession.success_url,
+      cancelUrl: checkoutSession.cancel_url,
+    })
+
+    return NextResponse.json({ 
+      sessionId: checkoutSession.id, 
+      url: checkoutSession.url,
+      successUrl: checkoutSession.success_url,
+    })
   } catch (error) {
     console.error('Error creating premium checkout session:', error)
 
